@@ -8,6 +8,10 @@ import { sendOTPonEmail } from "../utils/mailService.js";
 
 const registerUser = asyncHandler(async (req, res) => {
   const { username, email, password } = req.body;
+  if (!username || !email || !password)
+    return res
+      .status(httpCodes["Bad Request"])
+      .json(new ApiError(httpCodes["Bad Request"], "Fields are required"));
 
   // validation of upcoming data
   {
@@ -74,6 +78,10 @@ const registerUser = asyncHandler(async (req, res) => {
 
 const loginUser = asyncHandler(async (req, res) => {
   const { usernameOrEmail, password } = req.body;
+  if (!usernameOrEmail || !password)
+    return res
+      .status(httpCodes["Bad Request"])
+      .json(new ApiError(httpCodes["Bad Request"], "Fields are required"));
 
   const user = await User.findOne({
     $or: [{ username: usernameOrEmail }, { email: usernameOrEmail }],
@@ -159,6 +167,11 @@ const generateOtp = asyncHandler(async (req, res) => {
 
 const verifyUser = asyncHandler(async (req, res) => {
   const { otp } = req.body;
+  if (!otp)
+    return res
+      .status(httpCodes["Bad Request"])
+      .json(new ApiError(httpCodes["Bad Request"], "Fields are required"));
+
   const optDoc = await OTP.findOne({ user: req?.user?._id });
 
   if (!(await optDoc.isOtpCorrect(otp))) {

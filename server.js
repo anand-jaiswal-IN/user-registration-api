@@ -9,7 +9,7 @@ connectDB()
   .then(() => {
     app.listen(PORT, async () => {
       const serverURL = `http://localhost:${PORT}`;
-      console.log(`SERVER is RUNNING on : ${serverURL}`); 
+      console.log(`SERVER is RUNNING on : ${serverURL}`);
     });
   })
   .catch((err) => {
