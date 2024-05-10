@@ -166,6 +166,15 @@ const generateOtp = asyncHandler(async (req, res) => {
 });
 
 const verifyUser = asyncHandler(async (req, res) => {
+  if (req?.user?.isVerified)
+    return res
+      .status(httpCodes["Not Acceptable"])
+      .json(
+        new ApiError(
+          httpCodes["Not Acceptable"],
+          "User Already Verified. No need to verify again"
+        )
+      );
   const { otp } = req.body;
   if (!otp)
     return res
@@ -173,7 +182,15 @@ const verifyUser = asyncHandler(async (req, res) => {
       .json(new ApiError(httpCodes["Bad Request"], "Fields are required"));
 
   const optDoc = await OTP.findOne({ user: req?.user?._id });
-
+  if (!optDoc)
+    return res
+      .status(httpCodes["Not Acceptable"])
+      .json(
+        new ApiError(
+          httpCodes["Not Acceptable"],
+          "OTP not found, Generate First"
+        )
+      );
   if (!(await optDoc.isOtpCorrect(otp))) {
     return res
       .status(httpCodes["Not Acceptable"])
